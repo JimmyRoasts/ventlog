@@ -138,7 +138,7 @@
 		</div>
 	</div>
 
-	<div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+	<div class="rounded-2xl border bg-card text-card-foreground shadow-sm">
 		<div class="flex flex-wrap items-center justify-between gap-3 border-b border-border/70 px-4 py-3">
 			<div>
 				<p class="text-sm font-semibold text-foreground">Readings</p>
@@ -257,7 +257,7 @@
 
 		<div class="overflow-x-auto">
 			<table class="min-w-full divide-y divide-border text-sm">
-				<thead class="bg-muted/60 text-left font-medium text-foreground">
+				<thead class="bg-muted/60 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
 					<tr class="[&>th]:px-4 [&>th]:py-2">
 						<th>Node</th>
 						<th class="text-right">#</th>

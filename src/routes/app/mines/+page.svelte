@@ -364,25 +364,32 @@
 			<CardContent class="p-0">
 				<div class="overflow-hidden rounded-lg border border-border shadow-sm">
 					<table class="min-w-full divide-y divide-border">
-						<thead class="bg-muted text-left text-sm font-semibold text-foreground/90">
+						<thead class="bg-muted/70 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
 							<tr>
-								<th class="px-4 py-3">Name</th>
-								<th class="px-4 py-3">Location</th>
-								<th class="px-4 py-3">Host rock</th>
-								<th class="px-4 py-3">Mine type</th>
-								<th class="px-4 py-3">Max depth (m)</th>
-								<th class="px-4 py-3">Altitude (m)</th>
-								<th class="px-4 py-3">Site pressure (kPa)</th>
-								<th class="px-4 py-3">Weather</th>
-								<th class="px-4 py-3 text-right">Actions</th>
-								<th class="px-4 py-3 text-right">Survey points</th>
-								<th class="px-4 py-3 text-right">Surveys</th>
+								<th class="px-4 py-3 text-center">Name</th>
+								<th class="px-4 py-3 text-center">Location</th>
+								<th class="px-4 py-3 text-center">Host rock</th>
+								<th class="px-4 py-3 text-center">Mine type</th>
+								<th class="px-4 py-3 text-center">Max depth (m)</th>
+								<th class="px-4 py-3 text-center">Altitude (m)</th>
+								<th class="px-4 py-3 text-center">Site pressure (kPa)</th>
+								<th class="px-4 py-3 text-center">Weather</th>
+								<th class="px-4 py-3 text-center">Actions</th>
+								<th class="px-4 py-3 text-center">Survey points</th>
+								<th class="px-4 py-3 text-center">Surveys</th>
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-border bg-card text-sm text-foreground">
 							{#each data.mines as mine}
 								<tr class="hover:bg-muted/70 align-top">
-									<td class="px-4 py-3 font-medium text-foreground">{mine.name}</td>
+									<td class="px-4 py-3 font-medium text-foreground text-left">
+										<div class="flex items-center gap-2">
+											<span>{mine.name}</span>
+											<span class="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+												Active
+											</span>
+										</div>
+									</td>
 									<td class="px-4 py-3 text-muted-foreground">
 										{mine.location ?? '—'}
 									</td>
@@ -392,40 +399,27 @@
 									<td class="px-4 py-3 text-muted-foreground">
 										{optionLabel(mine.mineType, MINE_TYPE_OPTIONS)}
 									</td>
-									<td class="px-4 py-3 text-muted-foreground">
+									<td class="px-4 py-3 text-right text-muted-foreground font-numeric">
 										{formatNumber(mine.maxDepthM)}
 									</td>
-									<td class="px-4 py-3 text-muted-foreground">
+									<td class="px-4 py-3 text-right text-muted-foreground font-numeric">
 										{formatNumber(mine.altitudeM)}
 									</td>
-									<td class="px-4 py-3 text-muted-foreground">
+									<td class="px-4 py-3 text-right text-muted-foreground font-numeric">
 										{formatNumber(mine.sitePressureKpa, 1)}
 									</td>
 									<td class="px-4 py-3 text-muted-foreground">
 										{#if mine.dailyMaxDryBulbC ?? mine.hottestMonthMaxDryBulbC}
-											<div class="text-xs text-foreground">
-												Daily: {formatNumber(mine.dailyMinDryBulbC, 1)} / {formatNumber(mine.dailyMaxDryBulbC, 1)} °C DB
-											</div>
-											<div class="text-xs">
-												Wet bulb: {formatNumber(mine.dailyMinWetBulbC, 1)} / {formatNumber(mine.dailyMaxWetBulbC, 1)} °C
-											</div>
-											{#if mine.dailyRelativeHumidityPct}
-												<div class="text-xs">RH: {formatNumber(mine.dailyRelativeHumidityPct, 0)}%</div>
-											{/if}
-											{#if mine.hottestMonth}
-												<div class="mt-1 text-xs text-foreground">
-													Hottest month ({optionLabel(mine.hottestMonth, MONTH_OPTIONS)}):
+											<div class="space-y-1 text-xs leading-relaxed">
+												<div class="text-foreground whitespace-normal">
+													Daily: <span class="font-numeric">{formatNumber(mine.dailyMinDryBulbC, 1)}</span> / <span class="font-numeric">{formatNumber(mine.dailyMaxDryBulbC, 1)}</span> °C DB · WB <span class="font-numeric">{formatNumber(mine.dailyMinWetBulbC, 1)}</span> / <span class="font-numeric">{formatNumber(mine.dailyMaxWetBulbC, 1)}</span> °C{#if mine.dailyRelativeHumidityPct} · RH <span class="font-numeric">{formatNumber(mine.dailyRelativeHumidityPct, 0)}</span>%{/if}
 												</div>
-												<div class="text-xs">
-													DB {formatNumber(mine.hottestMonthMinDryBulbC, 1)} / {formatNumber(mine.hottestMonthMaxDryBulbC, 1)} °C
-												</div>
-												<div class="text-xs">
-													WB {formatNumber(mine.hottestMonthMinWetBulbC, 1)} / {formatNumber(mine.hottestMonthMaxWetBulbC, 1)} °C
-												</div>
-												{#if mine.hottestMonthRelativeHumidityPct}
-													<div class="text-xs">RH {formatNumber(mine.hottestMonthRelativeHumidityPct, 0)}%</div>
+												{#if mine.hottestMonth}
+													<div class="text-muted-foreground whitespace-normal">
+														Hottest {optionLabel(mine.hottestMonth, MONTH_OPTIONS)}: DB <span class="font-numeric">{formatNumber(mine.hottestMonthMinDryBulbC, 1)}</span> / <span class="font-numeric">{formatNumber(mine.hottestMonthMaxDryBulbC, 1)}</span> °C · WB <span class="font-numeric">{formatNumber(mine.hottestMonthMinWetBulbC, 1)}</span> / <span class="font-numeric">{formatNumber(mine.hottestMonthMaxWetBulbC, 1)}</span> °C{#if mine.hottestMonthRelativeHumidityPct} · RH <span class="font-numeric">{formatNumber(mine.hottestMonthRelativeHumidityPct, 0)}</span>%{/if}
+													</div>
 												{/if}
-											{/if}
+											</div>
 										{:else}
 											<span>—</span>
 										{/if}

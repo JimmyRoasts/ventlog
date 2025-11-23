@@ -156,7 +156,7 @@
 											<Button type="button" variant="outline" {...props}>Cancel</Button>
 										{/snippet}
 									</Dialog.Close>
-									<Button type="submit">Save node</Button>
+									<Button type="submit">Save survey point</Button>
 								</div>
 							</form>
 						</Dialog.Content>
@@ -175,7 +175,7 @@
 			{/if}
 		</div>
 	{:else}
-		<div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+		<div class="rounded-2xl border bg-card text-card-foreground shadow-sm">
 			<div class="border-b border-border/80 px-4 py-3">
 				<p class="text-sm font-semibold text-foreground">Survey points for {data.mine.name}</p>
 				<p class="text-xs text-muted-foreground">
@@ -184,7 +184,7 @@
 			</div>
 			<div class="overflow-auto">
 				<table class="min-w-full divide-y divide-border text-sm">
-					<thead class="bg-muted/60 text-left font-medium text-foreground">
+					<thead class="bg-muted/60 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
 						<tr class="[&>th]:px-4 [&>th]:py-2">
 							<th>Name</th>
 							<th>Code</th>
@@ -208,18 +208,18 @@
 									<td class="font-medium text-foreground">{node.name}</td>
 									<td class="text-muted-foreground">{node.code ?? '—'}</td>
 									<td class="text-muted-foreground">{node.levelName ?? '—'}</td>
-									<td class="text-right text-muted-foreground">
-										{formatNumber(node.levelElevationM, 1)}
-									</td>
+								<td class="text-right text-muted-foreground font-numeric">
+									{formatNumber(node.levelElevationM, 1)}
+								</td>
 									<td class="max-w-xs text-muted-foreground">
 										{node.description ?? '—'}
 									</td>
-									<td class="text-center">
-										<span
-											class="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs font-medium text-foreground"
-										>
-											{node.isActive ? 'Yes' : 'No'}
-										</span>
+								<td class="text-center">
+									<span
+										class={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold ${node.isActive ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-100' : 'bg-muted text-muted-foreground'}`}
+									>
+										{node.isActive ? 'Yes' : 'No'}
+									</span>
 									</td>
 									<td class="text-right">
 										<div class="flex justify-end gap-2">
