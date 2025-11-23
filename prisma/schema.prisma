@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id            String  @id @default(cuid())
+  name          String
+  primaryDomain String
+  extraDomains  String?
+
+  users     User[]
+  mines     Mine[]
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  fullName     String
+  passwordHash String
+  role         String  @default("user")
+  isActive     Boolean @default(true)
+
+  company        Company  @relation(fields: [companyId], references: [id])
+  companyId      String
+  surveysCreated Survey[] @relation("SurveyCreatedBy")
+
+  createdAt DateTime @default(now())
+}
+
+model Mine {
+  id       String  @id @default(cuid())
+  name     String
+  code     String?
+  location String?
+
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+
+  nodes     Node[]
+  surveys   Survey[]
+  createdAt DateTime @default(now())
+}
+
+model Node {
+  id              String  @id @default(cuid())
+  name            String
+  code            String?
+  levelName       String?
+  levelElevationM Float?
+  description     String?
+  isActive        Boolean @default(true)
+
+  mine   Mine   @relation(fields: [mineId], references: [id])
+  mineId String
+
+  readings  SurveyReading[]
+  createdAt DateTime        @default(now())
+}
+
+model Survey {
+  id             String   @id @default(cuid())
+  surveyDatetime DateTime
+  title          String?
+  notes          String?
+
+  mine   Mine   @relation(fields: [mineId], references: [id])
+  mineId String
+
+  createdBy       User?   @relation("SurveyCreatedBy", fields: [createdByUserId], references: [id])
+  createdByUserId String?
+
+  readings  SurveyReading[]
+  createdAt DateTime        @default(now())
+}
+
+model SurveyReading {
+  id       String @id @default(cuid())
+  survey   Survey @relation(fields: [surveyId], references: [id])
+  surveyId String
+
+  node   Node   @relation(fields: [nodeId], references: [id])
+  nodeId String
+
+  readingIndex Int @default(1)
+
+  dryBulbC              Float?
+  wetBulbC              Float?
+  relativeHumidityPct   Float?
+  airVelocityMs         Float?
+  volumetricFlowM3s     Float?
+  staticPressurePa      Float?
+  barometricPressureKpa Float?
+
+  humidityRatioKgPerKgDa Float?
+  vapourPressureKpa      Float?
+  airEnthalpyKjPerKgDa   Float?
+
+  instrumentId String?
+  remarks      String?
+
+  createdAt DateTime @default(now())
+
+  @@unique([surveyId, nodeId, readingIndex])
+}
