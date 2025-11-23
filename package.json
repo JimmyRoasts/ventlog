@@ -12,6 +12,8 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
+		"prisma:generate": "prisma generate",
+		"prisma:migrate": "prisma migrate dev --name init",
 		"db:push": "drizzle-kit push",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
@@ -36,6 +38,8 @@
 		"globals": "^16.5.0",
 		"prettier": "^3.6.2",
 		"prettier-plugin-svelte": "^3.4.0",
+		"prisma": "5.22.0",
+		"shadcn-svelte": "^1.0.12",
 		"svelte": "^5.43.8",
 		"svelte-check": "^4.3.4",
 		"tailwindcss": "^4.1.17",
@@ -44,6 +48,12 @@
 		"vite": "^7.2.2"
 	},
 	"dependencies": {
-		"@node-rs/argon2": "^2.0.2"
+		"@lucide/svelte": "^0.554.0",
+		"@node-rs/argon2": "^2.0.2",
+		"@prisma/client": "5.22.0",
+		"bits-ui": "^2.14.4",
+		"clsx": "^2.1.1",
+		"tailwind-merge": "^3.4.0",
+		"tailwind-variants": "^3.2.2"
 	}
 }

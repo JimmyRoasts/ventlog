@@ -1,38 +1,29 @@
-# sv
+# Ventlog
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Ventlog is a self-hosted web app for underground mine ventilation surveys, focused on simple, standardised data capture and clear measurement procedures. It is built with SvelteKit, Tailwind CSS, and shadcn-svelte.
 
-## Creating a project
+## Getting started
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```sh
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
+```bash
+npm install
 npm run dev -- --open
 ```
 
-## Building
+## Project goals (V1)
 
-To create a production version of your app:
+- Simple, dark-mode capable UI
+- Basic structure for companies, mines, nodes, surveys, readings (back-end to be added)
+- Guidance pages explaining how to take measurements
+- Simple reporting views (latest readings per node) and CSV export (to be implemented)
 
-```sh
-npm run build
-```
+## Licensing
 
-You can preview the production build with `npm run preview`.
+Ventlog is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0-only).
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+In plain language:
+
+- It is free software.
+- You can run, study, and modify it.
+- If you modify it and make it available as a network service, you must also provide the source code of your modifications under the same licence.
+
+Commercial licensing arrangements may be available separately.
