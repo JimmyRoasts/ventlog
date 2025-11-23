@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "checkJs": false,
+    "types": ["svelte"]
+  },
+  "include": ["src"]
+}
