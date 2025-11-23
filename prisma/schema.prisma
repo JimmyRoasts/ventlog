@@ -76,6 +76,8 @@ model Node {
 
   readings  SurveyReading[]
   createdAt DateTime        @default(now())
+
+  @@unique([mineId, code])
 }
 
 model Survey {

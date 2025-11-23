@@ -130,7 +130,20 @@ export const actions: Actions = {
 		}
 
 		try {
-			await prisma.mine.delete({ where: { id: mineId } });
+			await prisma.$transaction(async (tx) => {
+				const surveys = await tx.survey.findMany({
+					where: { mineId },
+					select: { id: true }
+				});
+				const surveyIds = surveys.map((s) => s.id);
+
+				if (surveyIds.length > 0) {
+					await tx.surveyReading.deleteMany({ where: { surveyId: { in: surveyIds } } });
+				}
+				await tx.survey.deleteMany({ where: { mineId } });
+				await tx.node.deleteMany({ where: { mineId } });
+				await tx.mine.delete({ where: { id: mineId } });
+			});
 		} catch (error) {
 			return fail(400, {
 				message: 'Could not delete mine. Check for dependent data (nodes/surveys) first.',

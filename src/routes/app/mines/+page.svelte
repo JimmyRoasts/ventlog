@@ -375,7 +375,7 @@
 								<th class="px-4 py-3">Site pressure (kPa)</th>
 								<th class="px-4 py-3">Weather</th>
 								<th class="px-4 py-3 text-right">Actions</th>
-								<th class="px-4 py-3 text-right">Nodes</th>
+								<th class="px-4 py-3 text-right">Survey points</th>
 								<th class="px-4 py-3 text-right">Surveys</th>
 							</tr>
 						</thead>
@@ -432,6 +432,14 @@
 									</td>
 									<td class="px-4 py-3">
 										<div class="flex justify-end gap-2">
+											<Button
+												href={`/app/mines/${mine.id}/nodes`}
+												variant="ghost"
+												size="sm"
+												class="px-3"
+											>
+												Manage survey points
+											</Button>
 											<Dialog.Root>
 												<Dialog.Trigger>
 													{#snippet child({ props })}
@@ -489,7 +497,14 @@
 											</AlertDialog.Root>
 										</div>
 									</td>
-									<td class="px-4 py-3 text-right text-muted-foreground">{mine._count?.nodes ?? 0}</td>
+									<td class="px-4 py-3 text-right text-muted-foreground">
+										<a
+											class="text-xs font-medium text-primary underline-offset-2 hover:underline"
+											href={`/app/mines/${mine.id}/nodes`}
+										>
+											{mine._count?.nodes ?? 0}
+										</a>
+									</td>
 									<td class="px-4 py-3 text-right text-muted-foreground">
 										{mine._count?.surveys ?? 0}
 									</td>
