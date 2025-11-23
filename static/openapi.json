@@ -1,0 +1,166 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Ventlog API",
+    "version": "0.1.0",
+    "description": "Minimal API for mines."
+  },
+  "servers": [{ "url": "/" }],
+  "paths": {
+    "/api/mines": {
+      "get": {
+        "summary": "List mines",
+        "responses": {
+          "200": {
+            "description": "Mines",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Mine" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create mine",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MineInput" }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": { "$ref": "#/components/schemas/MineInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Mine" } }
+            }
+          },
+          "400": { "description": "Validation failed" }
+        }
+      }
+    },
+    "/api/mines/{id}": {
+      "get": {
+        "summary": "Get mine",
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mine",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Mine" } }
+            }
+          },
+          "404": { "description": "Not found" }
+        }
+      },
+      "patch": {
+        "summary": "Update mine",
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MineInput" }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": { "$ref": "#/components/schemas/MineInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Mine" } }
+            }
+          },
+          "400": { "description": "Validation failed" },
+          "404": { "description": "Not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete mine",
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Deleted" },
+          "400": { "description": "Cannot delete" },
+          "404": { "description": "Not found" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Mine": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "location": { "type": "string", "nullable": true },
+          "hostRock": { "type": "string", "nullable": true },
+          "mineType": { "type": "string", "nullable": true },
+          "maxDepthM": { "type": "number", "nullable": true },
+          "altitudeM": { "type": "number", "nullable": true },
+          "sitePressureKpa": { "type": "number", "nullable": true },
+          "dailyMaxDryBulbC": { "type": "number", "nullable": true },
+          "dailyMinDryBulbC": { "type": "number", "nullable": true },
+          "dailyMaxWetBulbC": { "type": "number", "nullable": true },
+          "dailyMinWetBulbC": { "type": "number", "nullable": true },
+          "dailyRelativeHumidityPct": { "type": "number", "nullable": true },
+          "hottestMonth": { "type": "string", "nullable": true },
+          "hottestMonthMaxDryBulbC": { "type": "number", "nullable": true },
+          "hottestMonthMinDryBulbC": { "type": "number", "nullable": true },
+          "hottestMonthMaxWetBulbC": { "type": "number", "nullable": true },
+          "hottestMonthMinWetBulbC": { "type": "number", "nullable": true },
+          "hottestMonthRelativeHumidityPct": { "type": "number", "nullable": true },
+          "_count": {
+            "type": "object",
+            "properties": {
+              "nodes": { "type": "integer" },
+              "surveys": { "type": "integer" }
+            }
+          }
+        },
+        "required": ["id", "name"]
+      },
+      "MineInput": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "location": { "type": "string", "nullable": true },
+          "hostRock": { "type": "string", "nullable": true },
+          "mineType": { "type": "string", "nullable": true },
+          "maxDepthM": { "type": "number", "nullable": true },
+          "altitudeM": { "type": "number", "nullable": true },
+          "dailyMaxDryBulbC": { "type": "number", "nullable": true },
+          "dailyMinDryBulbC": { "type": "number", "nullable": true },
+          "dailyMaxWetBulbC": { "type": "number", "nullable": true },
+          "dailyMinWetBulbC": { "type": "number", "nullable": true },
+          "dailyRelativeHumidityPct": { "type": "number", "nullable": true },
+          "hottestMonth": { "type": "string", "nullable": true },
+          "hottestMonthMaxDryBulbC": { "type": "number", "nullable": true },
+          "hottestMonthMinDryBulbC": { "type": "number", "nullable": true },
+          "hottestMonthMaxWetBulbC": { "type": "number", "nullable": true },
+          "hottestMonthMinWetBulbC": { "type": "number", "nullable": true },
+          "hottestMonthRelativeHumidityPct": { "type": "number", "nullable": true }
+        },
+        "required": ["name"]
+      }
+    }
+  }
+}

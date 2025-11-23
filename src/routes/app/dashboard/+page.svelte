@@ -8,7 +8,7 @@
 		<CardTitle class="text-2xl">Dashboard</CardTitle>
 	</CardHeader>
 	<CardContent class="space-y-3">
-		<p class="text-slate-600 dark:text-slate-300">
+		<p class="text-muted-foreground">
 			This will surface recent surveys, key mines, and quick links so the team can jump straight into
 			current ventilation work.
 		</p>

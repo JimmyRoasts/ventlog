@@ -34,10 +34,25 @@ model User {
 }
 
 model Mine {
-  id       String  @id @default(cuid())
-  name     String
-  code     String?
-  location String?
+  id                         String   @id @default(cuid())
+  name                       String
+  location                   String?
+  maxDepthM                  Float?
+  hostRock                   String?
+  mineType                   String?
+  altitudeM                  Float?
+  sitePressureKpa            Float?
+  dailyMaxDryBulbC           Float?
+  dailyMinDryBulbC           Float?
+  dailyMaxWetBulbC           Float?
+  dailyMinWetBulbC           Float?
+  dailyRelativeHumidityPct   Float?
+  hottestMonth               String?
+  hottestMonthMaxDryBulbC    Float?
+  hottestMonthMinDryBulbC    Float?
+  hottestMonthMaxWetBulbC    Float?
+  hottestMonthMinWetBulbC    Float?
+  hottestMonthRelativeHumidityPct Float?
 
   company   Company @relation(fields: [companyId], references: [id])
   companyId String

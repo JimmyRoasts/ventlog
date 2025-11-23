@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms';
 	import type { ActionData } from './$types';
 
-	export let form: ActionData;
+	let { form }: { form: ActionData } = $props();
 </script>
 
 <h1>Login/Register</h1>

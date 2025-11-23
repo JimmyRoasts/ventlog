@@ -14,6 +14,7 @@
 - Database workflows: `npm run db:push` syncs schema to the target DB; `npm run db:generate` creates migrations; `npm run db:migrate` applies them; `npm run db:studio` opens Drizzle Studio for inspection.
 
 ## Coding Style & Naming Conventions
+- We are on Svelte 5; use runes (`$state`, `$derived`, `$effect`) in new components and avoid legacy Svelte 4 patterns unless refactoring old code.
 - TypeScript-first; keep Svelte components using `<script lang="ts">`. Prettier defaults (two-space indent, semicolons) apply across TS/Svelte.
 - Components in `$lib` should use PascalCase filenames; route segments stay kebab-case and follow SvelteKit `+page`/`+page.server` naming.
 - Keep DB queries inside `src/lib/server/db` helpers rather than directly in Svelte components; prefer small, pure utilities and reuse via `$lib`.
