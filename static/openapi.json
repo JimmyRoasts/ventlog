@@ -5,11 +5,17 @@
     "version": "0.1.0",
     "description": "Minimal API for mines."
   },
+  "tags": [
+    { "name": "Mines" },
+    { "name": "Survey points" },
+    { "name": "Surveys" },
+    { "name": "Readings" }
+  ],
   "servers": [{ "url": "/" }],
   "paths": {
     "/api/mines": {
       "get": {
-        "summary": "List mines",
+        "summary": "List mines", "tags": ["Mines"],
         "responses": {
           "200": {
             "description": "Mines",
@@ -25,7 +31,7 @@
         }
       },
       "post": {
-        "summary": "Create mine",
+        "summary": "Create mine", "tags": ["Mines"],
         "requestBody": {
           "required": true,
           "content": {
@@ -50,7 +56,7 @@
     },
     "/api/mines/{id}": {
       "get": {
-        "summary": "Get mine",
+        "summary": "Get mine", "tags": ["Mines"],
         "parameters": [
           { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
         ],
@@ -65,7 +71,7 @@
         }
       },
       "patch": {
-        "summary": "Update mine",
+        "summary": "Update mine", "tags": ["Mines"],
         "parameters": [
           { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
         ],
@@ -92,13 +98,199 @@
         }
       },
       "delete": {
-        "summary": "Delete mine",
+        "summary": "Delete mine", "tags": ["Mines"],
         "parameters": [
           { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
           "200": { "description": "Deleted" },
           "400": { "description": "Cannot delete" },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/api/survey-points": {
+      "get": {
+        "summary": "List survey points", "tags": ["Survey points"],
+        "parameters": [
+          {
+            "name": "mineId",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "Filter by mine"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Survey points",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/SurveyPoint" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create survey point", "tags": ["Survey points"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/SurveyPointInput" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SurveyPoint" } } } },
+          "400": { "description": "Validation failed" }
+        }
+      }
+    },
+    "/api/survey-points/{id}": {
+      "get": {
+        "summary": "Get survey point", "tags": ["Survey points"],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Survey point", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SurveyPoint" } } } },
+          "404": { "description": "Not found" }
+        }
+      },
+      "patch": {
+        "summary": "Update survey point", "tags": ["Survey points"],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SurveyPointInput" } } }
+        },
+        "responses": {
+          "200": { "description": "Updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SurveyPoint" } } } },
+          "400": { "description": "Validation failed" },
+          "404": { "description": "Not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete survey point", "tags": ["Survey points"],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Deleted" },
+          "400": { "description": "Cannot delete" },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/api/surveys": {
+      "get": {
+        "summary": "List surveys", "tags": ["Surveys"],
+        "responses": {
+          "200": {
+            "description": "Surveys",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Survey" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create survey", "tags": ["Surveys"],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SurveyInput" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "id": { "type": "string" } } } } }
+          },
+          "400": { "description": "Validation failed" }
+        }
+      }
+    },
+    "/api/surveys/{id}": {
+      "get": {
+        "summary": "Get survey", "tags": ["Surveys"],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Survey", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SurveyDetail" } } } },
+          "404": { "description": "Not found" }
+        }
+      },
+      "patch": {
+        "summary": "Update survey", "tags": ["Surveys"],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SurveyInput" } } }
+        },
+        "responses": {
+          "200": { "description": "Updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Survey" } } } },
+          "400": { "description": "Validation failed" },
+          "404": { "description": "Not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete survey", "tags": ["Surveys"],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Deleted" },
+          "400": { "description": "Cannot delete" },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/api/surveys/{surveyId}/readings": {
+      "get": {
+        "summary": "List readings for a survey", "tags": ["Readings"],
+        "parameters": [{ "name": "surveyId", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": {
+            "description": "Readings",
+            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/SurveyReading" } } } }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create reading", "tags": ["Readings"],
+        "parameters": [{ "name": "surveyId", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SurveyReadingInput" } } }
+        },
+        "responses": {
+          "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SurveyReading" } } } },
+          "400": { "description": "Validation failed" }
+        }
+      }
+    },
+    "/api/surveys/{surveyId}/readings/{id}": {
+      "patch": {
+        "summary": "Update reading", "tags": ["Readings"],
+        "parameters": [
+          { "name": "surveyId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SurveyReadingInput" } } }
+        },
+        "responses": {
+          "200": { "description": "Updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SurveyReading" } } } },
+          "400": { "description": "Validation failed" },
+          "404": { "description": "Not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete reading", "tags": ["Readings"],
+        "parameters": [
+          { "name": "surveyId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Deleted" },
           "404": { "description": "Not found" }
         }
       }
@@ -160,6 +352,114 @@
           "hottestMonthRelativeHumidityPct": { "type": "number", "nullable": true }
         },
         "required": ["name"]
+      },
+      "SurveyPoint": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "mineId": { "type": "string" },
+          "name": { "type": "string" },
+          "code": { "type": "string", "nullable": true },
+          "levelName": { "type": "string", "nullable": true },
+          "levelElevationM": { "type": "number", "nullable": true },
+          "description": { "type": "string", "nullable": true },
+          "isActive": { "type": "boolean" },
+          "_count": { "type": "object", "properties": { "readings": { "type": "integer" } } }
+        },
+        "required": ["id", "mineId", "name"]
+      },
+      "SurveyPointInput": {
+        "type": "object",
+        "properties": {
+          "mineId": { "type": "string" },
+          "name": { "type": "string" },
+          "code": { "type": "string", "nullable": true },
+          "levelName": { "type": "string", "nullable": true },
+          "levelElevationM": { "type": "number", "nullable": true },
+          "description": { "type": "string", "nullable": true },
+          "isActive": { "type": "boolean" }
+        },
+        "required": ["mineId", "name"]
+      },
+      "Survey": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "mineId": { "type": "string" },
+          "surveyDatetime": { "type": "string", "format": "date-time" },
+          "title": { "type": "string", "nullable": true },
+          "notes": { "type": "string", "nullable": true },
+          "mine": { "type": "object", "properties": { "id": { "type": "string" }, "name": { "type": "string" } } },
+          "_count": { "type": "object", "properties": { "readings": { "type": "integer" } } }
+        },
+        "required": ["id", "mineId", "surveyDatetime"]
+      },
+      "SurveyInput": {
+        "type": "object",
+        "properties": {
+          "mineId": { "type": "string" },
+          "surveyDatetime": { "type": "string", "format": "date-time" },
+          "title": { "type": "string", "nullable": true },
+          "notes": { "type": "string", "nullable": true }
+        },
+        "required": ["mineId", "surveyDatetime"]
+      },
+      "SurveyDetail": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Survey" },
+          {
+            "type": "object",
+            "properties": {
+              "readings": { "type": "array", "items": { "$ref": "#/components/schemas/SurveyReading" } }
+            }
+          }
+        ]
+      },
+      "SurveyReading": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "surveyId": { "type": "string" },
+          "nodeId": { "type": "string" },
+          "readingIndex": { "type": "integer" },
+          "dryBulbC": { "type": "number", "nullable": true },
+          "wetBulbC": { "type": "number", "nullable": true },
+          "relativeHumidityPct": { "type": "number", "nullable": true },
+          "airVelocityMs": { "type": "number", "nullable": true },
+          "volumetricFlowM3s": { "type": "number", "nullable": true },
+          "staticPressurePa": { "type": "number", "nullable": true },
+          "barometricPressureKpa": { "type": "number", "nullable": true },
+          "humidityRatioKgPerKgDa": { "type": "number", "nullable": true },
+          "vapourPressureKpa": { "type": "number", "nullable": true },
+          "airEnthalpyKjPerKgDa": { "type": "number", "nullable": true },
+          "instrumentId": { "type": "string", "nullable": true },
+          "remarks": { "type": "string", "nullable": true },
+          "node": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "code": { "type": "string", "nullable": true }
+            }
+          }
+        },
+        "required": ["id", "surveyId", "nodeId", "readingIndex"]
+      },
+      "SurveyReadingInput": {
+        "type": "object",
+        "properties": {
+          "nodeId": { "type": "string" },
+          "readingIndex": { "type": "integer", "nullable": true },
+          "dryBulbC": { "type": "number" },
+          "wetBulbC": { "type": "number", "nullable": true },
+          "relativeHumidityPct": { "type": "number", "nullable": true },
+          "airVelocityMs": { "type": "number", "nullable": true },
+          "staticPressurePa": { "type": "number", "nullable": true },
+          "barometricPressureKpa": { "type": "number", "nullable": true },
+          "instrumentId": { "type": "string", "nullable": true },
+          "remarks": { "type": "string", "nullable": true }
+        },
+        "required": ["nodeId", "dryBulbC"]
       }
     }
   }
