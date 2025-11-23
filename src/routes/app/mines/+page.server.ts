@@ -1,4 +1,4 @@
-import { calculateSitePressureKpa, parseMineForm } from '$lib/server/mine-validation';
+import { calculateSitePressureKpa, parseMineForm, parseString } from '$lib/server/mine-validation';
 import { prisma } from '$lib/db/prisma';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';

@@ -69,7 +69,7 @@ const parseNumber = (
 	return value;
 };
 
-const parseString = (
+export const parseString = (
 	formData: FormData,
 	name: string,
 	{
