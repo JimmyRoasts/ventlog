@@ -42,20 +42,35 @@ export const actions: Actions = {
 			return fail(400, { message: 'Please fix the highlighted fields.', errors });
 		}
 
-		try {
-			const created = await prisma.survey.create({
-				data: {
-					mineId,
-					title,
-					notes,
-					surveyDatetime: new Date(surveyDatetime)
-				},
-				select: { id: true }
-			});
-			throw redirect(303, `/app/surveys/${created.id}`);
-		} catch (err) {
-			console.error('Failed to create survey', err);
-			return fail(400, { message: 'Could not create survey. Please try again.' });
+		const created = await prisma.survey.create({
+			data: {
+				mineId,
+				title,
+				notes,
+				surveyDatetime: new Date(surveyDatetime)
+			},
+			select: { id: true }
+		});
+		return redirect(303, `/app/surveys/${created.id}`);
+	},
+	deleteSelected: async ({ request }) => {
+		const formData = await request.formData();
+		const surveyIds = formData.getAll('surveyIds').filter((v): v is string => typeof v === 'string');
+
+		if (surveyIds.length === 0) {
+			return fail(400, { message: 'Select at least one survey to delete.' });
 		}
+
+		try {
+			await prisma.$transaction([
+				prisma.surveyReading.deleteMany({ where: { surveyId: { in: surveyIds } } }),
+				prisma.survey.deleteMany({ where: { id: { in: surveyIds } } })
+			]);
+		} catch (err) {
+			console.error('Failed to delete selected surveys', err);
+			return fail(400, { message: 'Could not delete selected surveys. Please try again.' });
+		}
+
+		return { success: true };
 	}
 };

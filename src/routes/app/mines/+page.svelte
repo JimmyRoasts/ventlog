@@ -5,195 +5,221 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
+	import FormField from '$lib/components/FormField.svelte';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import PencilIcon from '@lucide/svelte/icons/pencil';
 	import TrashIcon from '@lucide/svelte/icons/trash';
+	import { formatNumber, optionLabel } from '$lib/utils/format';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData | null } = $props();
 	type MineRow = PageData['mines'][number];
 
-	const formatNumber = (value: number | null | undefined, digits = 0) =>
-		value == null ? '—' : Number(value).toLocaleString('en-US', { maximumFractionDigits: digits });
-	const optionLabel = (value: string | null | undefined, options: { value: string; label: string }[]) =>
-		value ? options.find((option) => option.value === value)?.label ?? value : '—';
+	const SELECT_CLASS =
+		'border-input bg-background selection:bg-primary selection:text-primary-foreground ring-offset-background placeholder:text-muted-foreground shadow-xs flex h-9 w-full min-w-0 rounded-md border px-3 py-1 text-base outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm';
+
+	const PLACEHOLDERS = {
+		name: 'Pioneer Underground',
+		location: 'Kambalda, WA',
+		maxDepth: '600',
+		hostRock: 'Select host rock',
+		mineType: 'Select method',
+		altitude: '1100',
+		dailyMaxDb: '32',
+		dailyMinDb: '8',
+		dailyMaxWb: '25',
+		dailyMinWb: '4',
+		annualRain: '320',
+		highestWetBulb: '27',
+		primaryFan: 'Centac B32',
+		secondaries: 'Axial, staged',
+		notes: 'Any special controls, remote fans, constraints...'
+	} as const;
 </script>
 
-{#snippet mineForm({ mine = null as MineRow | null, action = '?/create', submitLabel = 'Save mine' })}
+{#snippet mineForm({
+	mine = null as MineRow | null,
+	action = '?/create',
+	submitLabel = 'Save mine'
+})}
 	{@const idSuffix = mine?.id ?? 'new'}
 	{@const showErrors = !mine}
 	{#if form?.message && showErrors}
-		<p class="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+		<p
+			class="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+		>
 			{form.message}
 		</p>
 	{/if}
-	<form class="space-y-6" method="POST" action={action}>
+	<form class="space-y-6" method="POST" {action}>
 		{#if mine}
 			<input type="hidden" name="mineId" value={mine.id} />
 		{/if}
 		<div class="grid gap-4 sm:grid-cols-2">
-			<div class="space-y-2">
-				<Label for={`mine-name-${idSuffix}`}>Name</Label>
+			<FormField
+				label="Name"
+				forId={`mine-name-${idSuffix}`}
+				error={showErrors ? form?.errors?.name : undefined}
+			>
 				<Input
 					id={`mine-name-${idSuffix}`}
 					name="name"
-					placeholder="Pioneer Underground"
+					placeholder={PLACEHOLDERS.name}
 					required
 					value={mine?.name ?? ''}
 					aria-invalid={Boolean(form?.errors?.name && showErrors)}
 				/>
-				{#if form?.errors?.name && showErrors}
-					<p class="text-xs text-destructive">{form.errors.name}</p>
-				{/if}
-			</div>
-			<div class="space-y-2">
-				<Label for={`mine-location-${idSuffix}`}>Address / location</Label>
+			</FormField>
+			<FormField
+				label="Address / location"
+				forId={`mine-location-${idSuffix}`}
+				error={showErrors ? form?.errors?.location : undefined}
+			>
 				<Input
 					id={`mine-location-${idSuffix}`}
 					name="location"
-					placeholder="Kambalda, WA"
+					placeholder={PLACEHOLDERS.location}
 					value={mine?.location ?? ''}
 					aria-invalid={Boolean(form?.errors?.location && showErrors)}
 				/>
-				{#if form?.errors?.location && showErrors}
-					<p class="text-xs text-destructive">{form.errors.location}</p>
-				{/if}
-			</div>
-			<div class="space-y-2">
-				<Label for={`mine-max-depth-${idSuffix}`}>Max depth (m)</Label>
+			</FormField>
+			<FormField
+				label="Max depth (m)"
+				forId={`mine-max-depth-${idSuffix}`}
+				error={showErrors ? form?.errors?.maxDepthM : undefined}
+			>
 				<Input
 					id={`mine-max-depth-${idSuffix}`}
 					name="maxDepthM"
 					type="number"
 					min="0"
 					step="1"
-					placeholder="600"
+					placeholder={PLACEHOLDERS.maxDepth}
 					value={mine?.maxDepthM ?? ''}
 					aria-invalid={Boolean(form?.errors?.maxDepthM && showErrors)}
 				/>
-				{#if form?.errors?.maxDepthM && showErrors}
-					<p class="text-xs text-destructive">{form.errors.maxDepthM}</p>
-				{/if}
-			</div>
-			<div class="space-y-2">
-				<Label for={`mine-host-rock-${idSuffix}`}>Host rock</Label>
+			</FormField>
+			<FormField
+				label="Host rock"
+				forId={`mine-host-rock-${idSuffix}`}
+				error={showErrors ? form?.errors?.hostRock : undefined}
+			>
 				<select
 					id={`mine-host-rock-${idSuffix}`}
 					name="hostRock"
-					class="border-input bg-background selection:bg-primary selection:text-primary-foreground ring-offset-background placeholder:text-muted-foreground shadow-xs flex h-9 w-full min-w-0 rounded-md border px-3 py-1 text-base outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+					class={SELECT_CLASS}
 					aria-invalid={Boolean(form?.errors?.hostRock && showErrors)}
 					value={mine?.hostRock ?? ''}
 				>
-					<option value="">Select host rock</option>
+					<option value="">{PLACEHOLDERS.hostRock}</option>
 					{#each HOST_ROCK_OPTIONS as option}
 						<option value={option.value}>{option.label}</option>
 					{/each}
 				</select>
-				{#if form?.errors?.hostRock && showErrors}
-					<p class="text-xs text-destructive">{form.errors.hostRock}</p>
-				{/if}
-			</div>
-			<div class="space-y-2">
-				<Label for={`mine-type-${idSuffix}`}>Mine type</Label>
+			</FormField>
+			<FormField
+				label="Mine type"
+				forId={`mine-type-${idSuffix}`}
+				error={showErrors ? form?.errors?.mineType : undefined}
+			>
 				<select
 					id={`mine-type-${idSuffix}`}
 					name="mineType"
-					class="border-input bg-background selection:bg-primary selection:text-primary-foreground ring-offset-background placeholder:text-muted-foreground shadow-xs flex h-9 w-full min-w-0 rounded-md border px-3 py-1 text-base outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+					class={SELECT_CLASS}
 					aria-invalid={Boolean(form?.errors?.mineType && showErrors)}
 					value={mine?.mineType ?? ''}
 				>
-					<option value="">Select method</option>
+					<option value="">{PLACEHOLDERS.mineType}</option>
 					{#each MINE_TYPE_OPTIONS as option}
 						<option value={option.value}>{option.label}</option>
 					{/each}
 				</select>
-				{#if form?.errors?.mineType && showErrors}
-					<p class="text-xs text-destructive">{form.errors.mineType}</p>
-				{/if}
-			</div>
-			<div class="space-y-2">
-				<Label for={`mine-altitude-${idSuffix}`}>Altitude (m)</Label>
+			</FormField>
+			<FormField
+				label="Altitude (m)"
+				forId={`mine-altitude-${idSuffix}`}
+				error={showErrors ? form?.errors?.altitudeM : undefined}
+			>
 				<Input
 					id={`mine-altitude-${idSuffix}`}
 					name="altitudeM"
 					type="number"
 					step="1"
-					placeholder="1100"
+					placeholder={PLACEHOLDERS.altitude}
 					value={mine?.altitudeM ?? ''}
 					aria-invalid={Boolean(form?.errors?.altitudeM && showErrors)}
 				/>
-				{#if form?.errors?.altitudeM && showErrors}
-					<p class="text-xs text-destructive">{form.errors.altitudeM}</p>
-				{/if}
-			</div>
+			</FormField>
 		</div>
 
 		<div class="rounded-lg border border-border/70 bg-muted/40 p-4">
 			<p class="mb-3 text-sm font-semibold text-foreground">Typical daily weather</p>
 			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-				<div class="space-y-2">
-					<Label for={`daily-max-db-${idSuffix}`}>Daily max dry bulb (°C)</Label>
+				<FormField
+					label="Daily max dry bulb (°C)"
+					forId={`daily-max-db-${idSuffix}`}
+					error={showErrors ? form?.errors?.dailyMaxDryBulbC : undefined}
+				>
 					<Input
 						id={`daily-max-db-${idSuffix}`}
 						name="dailyMaxDryBulbC"
 						type="number"
 						step="0.1"
-						placeholder="32"
+						placeholder={PLACEHOLDERS.dailyMaxDb}
 						value={mine?.dailyMaxDryBulbC ?? ''}
 						aria-invalid={Boolean(form?.errors?.dailyMaxDryBulbC && showErrors)}
 					/>
-					{#if form?.errors?.dailyMaxDryBulbC && showErrors}
-						<p class="text-xs text-destructive">{form.errors.dailyMaxDryBulbC}</p>
-					{/if}
-				</div>
-				<div class="space-y-2">
-					<Label for={`daily-min-db-${idSuffix}`}>Daily min dry bulb (°C)</Label>
+				</FormField>
+				<FormField
+					label="Daily min dry bulb (°C)"
+					forId={`daily-min-db-${idSuffix}`}
+					error={showErrors ? form?.errors?.dailyMinDryBulbC : undefined}
+				>
 					<Input
 						id={`daily-min-db-${idSuffix}`}
 						name="dailyMinDryBulbC"
 						type="number"
 						step="0.1"
-						placeholder="8"
+						placeholder={PLACEHOLDERS.dailyMinDb}
 						value={mine?.dailyMinDryBulbC ?? ''}
 						aria-invalid={Boolean(form?.errors?.dailyMinDryBulbC && showErrors)}
 					/>
-					{#if form?.errors?.dailyMinDryBulbC && showErrors}
-						<p class="text-xs text-destructive">{form.errors.dailyMinDryBulbC}</p>
-					{/if}
-				</div>
-				<div class="space-y-2">
-					<Label for={`daily-max-wb-${idSuffix}`}>Daily max wet bulb (°C)</Label>
+				</FormField>
+				<FormField
+					label="Daily max wet bulb (°C)"
+					forId={`daily-max-wb-${idSuffix}`}
+					error={showErrors ? form?.errors?.dailyMaxWetBulbC : undefined}
+				>
 					<Input
 						id={`daily-max-wb-${idSuffix}`}
 						name="dailyMaxWetBulbC"
 						type="number"
 						step="0.1"
-						placeholder="25"
+						placeholder={PLACEHOLDERS.dailyMaxWb}
 						value={mine?.dailyMaxWetBulbC ?? ''}
 						aria-invalid={Boolean(form?.errors?.dailyMaxWetBulbC && showErrors)}
 					/>
-					{#if form?.errors?.dailyMaxWetBulbC && showErrors}
-						<p class="text-xs text-destructive">{form.errors.dailyMaxWetBulbC}</p>
-					{/if}
-				</div>
-				<div class="space-y-2">
-					<Label for={`daily-min-wb-${idSuffix}`}>Daily min wet bulb (°C)</Label>
+				</FormField>
+				<FormField
+					label="Daily min wet bulb (°C)"
+					forId={`daily-min-wb-${idSuffix}`}
+					error={showErrors ? form?.errors?.dailyMinWetBulbC : undefined}
+				>
 					<Input
 						id={`daily-min-wb-${idSuffix}`}
 						name="dailyMinWetBulbC"
 						type="number"
 						step="0.1"
-						placeholder="4"
+						placeholder={PLACEHOLDERS.dailyMinWb}
 						value={mine?.dailyMinWetBulbC ?? ''}
 						aria-invalid={Boolean(form?.errors?.dailyMinWetBulbC && showErrors)}
 					/>
-					{#if form?.errors?.dailyMinWetBulbC && showErrors}
-						<p class="text-xs text-destructive">{form.errors.dailyMinWetBulbC}</p>
-					{/if}
-				</div>
-				<div class="space-y-2">
-					<Label for={`daily-rh-${idSuffix}`}>Daily relative humidity (%)</Label>
+				</FormField>
+				<FormField
+					label="Daily relative humidity (%)"
+					forId={`daily-rh-${idSuffix}`}
+					error={showErrors ? form?.errors?.dailyRelativeHumidityPct : undefined}
+				>
 					<Input
 						id={`daily-rh-${idSuffix}`}
 						name="dailyRelativeHumidityPct"
@@ -205,22 +231,22 @@
 						value={mine?.dailyRelativeHumidityPct ?? ''}
 						aria-invalid={Boolean(form?.errors?.dailyRelativeHumidityPct && showErrors)}
 					/>
-					{#if form?.errors?.dailyRelativeHumidityPct && showErrors}
-						<p class="text-xs text-destructive">{form.errors.dailyRelativeHumidityPct}</p>
-					{/if}
-				</div>
+				</FormField>
 			</div>
 		</div>
 
 		<div class="rounded-lg border border-border/70 bg-muted/40 p-4">
 			<p class="mb-3 text-sm font-semibold text-foreground">Hottest month extremes</p>
 			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-				<div class="space-y-2">
-					<Label for={`hottest-month-${idSuffix}`}>Month</Label>
+				<FormField
+					label="Month"
+					forId={`hottest-month-${idSuffix}`}
+					error={showErrors ? form?.errors?.hottestMonth : undefined}
+				>
 					<select
 						id={`hottest-month-${idSuffix}`}
 						name="hottestMonth"
-						class="border-input bg-background selection:bg-primary selection:text-primary-foreground ring-offset-background placeholder:text-muted-foreground shadow-xs flex h-9 w-full min-w-0 rounded-md border px-3 py-1 text-base outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+						class={SELECT_CLASS}
 						aria-invalid={Boolean(form?.errors?.hottestMonth && showErrors)}
 						value={mine?.hottestMonth ?? ''}
 					>
@@ -229,42 +255,42 @@
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>
-					{#if form?.errors?.hottestMonth && showErrors}
-						<p class="text-xs text-destructive">{form.errors.hottestMonth}</p>
-					{/if}
-				</div>
-				<div class="space-y-2">
-					<Label for={`hottest-max-db-${idSuffix}`}>Max dry bulb (°C)</Label>
+				</FormField>
+				<FormField
+					label="Max dry bulb (°C)"
+					forId={`hottest-max-db-${idSuffix}`}
+					error={showErrors ? form?.errors?.hottestMonthMaxDryBulbC : undefined}
+				>
 					<Input
 						id={`hottest-max-db-${idSuffix}`}
 						name="hottestMonthMaxDryBulbC"
 						type="number"
 						step="0.1"
-						placeholder="40"
+						placeholder="38"
 						value={mine?.hottestMonthMaxDryBulbC ?? ''}
 						aria-invalid={Boolean(form?.errors?.hottestMonthMaxDryBulbC && showErrors)}
 					/>
-					{#if form?.errors?.hottestMonthMaxDryBulbC && showErrors}
-						<p class="text-xs text-destructive">{form.errors.hottestMonthMaxDryBulbC}</p>
-					{/if}
-				</div>
-				<div class="space-y-2">
-					<Label for={`hottest-min-db-${idSuffix}`}>Min dry bulb (°C)</Label>
+				</FormField>
+				<FormField
+					label="Min dry bulb (°C)"
+					forId={`hottest-min-db-${idSuffix}`}
+					error={showErrors ? form?.errors?.hottestMonthMinDryBulbC : undefined}
+				>
 					<Input
 						id={`hottest-min-db-${idSuffix}`}
 						name="hottestMonthMinDryBulbC"
 						type="number"
 						step="0.1"
-						placeholder="22"
+						placeholder="18"
 						value={mine?.hottestMonthMinDryBulbC ?? ''}
 						aria-invalid={Boolean(form?.errors?.hottestMonthMinDryBulbC && showErrors)}
 					/>
-					{#if form?.errors?.hottestMonthMinDryBulbC && showErrors}
-						<p class="text-xs text-destructive">{form.errors.hottestMonthMinDryBulbC}</p>
-					{/if}
-				</div>
-				<div class="space-y-2">
-					<Label for={`hottest-max-wb-${idSuffix}`}>Max wet bulb (°C)</Label>
+				</FormField>
+				<FormField
+					label="Max wet bulb (°C)"
+					forId={`hottest-max-wb-${idSuffix}`}
+					error={showErrors ? form?.errors?.hottestMonthMaxWetBulbC : undefined}
+				>
 					<Input
 						id={`hottest-max-wb-${idSuffix}`}
 						name="hottestMonthMaxWetBulbC"
@@ -274,27 +300,27 @@
 						value={mine?.hottestMonthMaxWetBulbC ?? ''}
 						aria-invalid={Boolean(form?.errors?.hottestMonthMaxWetBulbC && showErrors)}
 					/>
-					{#if form?.errors?.hottestMonthMaxWetBulbC && showErrors}
-						<p class="text-xs text-destructive">{form.errors.hottestMonthMaxWetBulbC}</p>
-					{/if}
-				</div>
-				<div class="space-y-2">
-					<Label for={`hottest-min-wb-${idSuffix}`}>Min wet bulb (°C)</Label>
+				</FormField>
+				<FormField
+					label="Min wet bulb (°C)"
+					forId={`hottest-min-wb-${idSuffix}`}
+					error={showErrors ? form?.errors?.hottestMonthMinWetBulbC : undefined}
+				>
 					<Input
 						id={`hottest-min-wb-${idSuffix}`}
 						name="hottestMonthMinWetBulbC"
 						type="number"
 						step="0.1"
-						placeholder="18"
+						placeholder="10"
 						value={mine?.hottestMonthMinWetBulbC ?? ''}
 						aria-invalid={Boolean(form?.errors?.hottestMonthMinWetBulbC && showErrors)}
 					/>
-					{#if form?.errors?.hottestMonthMinWetBulbC && showErrors}
-						<p class="text-xs text-destructive">{form.errors.hottestMonthMinWetBulbC}</p>
-					{/if}
-				</div>
-				<div class="space-y-2">
-					<Label for={`hottest-rh-${idSuffix}`}>Relative humidity (%)</Label>
+				</FormField>
+				<FormField
+					label="Relative humidity (%)"
+					forId={`hottest-rh-${idSuffix}`}
+					error={showErrors ? form?.errors?.hottestMonthRelativeHumidityPct : undefined}
+				>
 					<Input
 						id={`hottest-rh-${idSuffix}`}
 						name="hottestMonthRelativeHumidityPct"
@@ -306,10 +332,7 @@
 						value={mine?.hottestMonthRelativeHumidityPct ?? ''}
 						aria-invalid={Boolean(form?.errors?.hottestMonthRelativeHumidityPct && showErrors)}
 					/>
-					{#if form?.errors?.hottestMonthRelativeHumidityPct && showErrors}
-						<p class="text-xs text-destructive">{form.errors.hottestMonthRelativeHumidityPct}</p>
-					{/if}
-				</div>
+				</FormField>
 			</div>
 		</div>
 
@@ -364,7 +387,9 @@
 			<CardContent class="p-0">
 				<div class="overflow-hidden rounded-lg border border-border shadow-sm">
 					<table class="min-w-full divide-y divide-border">
-						<thead class="bg-muted/70 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+						<thead
+							class="bg-muted/70 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+						>
 							<tr>
 								<th class="px-4 py-3 text-center">Name</th>
 								<th class="px-4 py-3 text-center">Location</th>
@@ -385,7 +410,9 @@
 									<td class="px-4 py-3 font-medium text-foreground text-left">
 										<div class="flex items-center gap-2">
 											<span>{mine.name}</span>
-											<span class="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+											<span
+												class="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary"
+											>
 												Active
 											</span>
 										</div>
@@ -412,11 +439,42 @@
 										{#if mine.dailyMaxDryBulbC ?? mine.hottestMonthMaxDryBulbC}
 											<div class="space-y-1 text-xs leading-relaxed">
 												<div class="text-foreground whitespace-normal">
-													Daily: <span class="font-numeric">{formatNumber(mine.dailyMinDryBulbC, 1)}</span> / <span class="font-numeric">{formatNumber(mine.dailyMaxDryBulbC, 1)}</span> °C DB · WB <span class="font-numeric">{formatNumber(mine.dailyMinWetBulbC, 1)}</span> / <span class="font-numeric">{formatNumber(mine.dailyMaxWetBulbC, 1)}</span> °C{#if mine.dailyRelativeHumidityPct} · RH <span class="font-numeric">{formatNumber(mine.dailyRelativeHumidityPct, 0)}</span>%{/if}
+													Daily: <span class="font-numeric"
+														>{formatNumber(mine.dailyMinDryBulbC, 1)}</span
+													>
+													/
+													<span class="font-numeric">{formatNumber(mine.dailyMaxDryBulbC, 1)}</span>
+													°C DB · WB
+													<span class="font-numeric">{formatNumber(mine.dailyMinWetBulbC, 1)}</span>
+													/
+													<span class="font-numeric">{formatNumber(mine.dailyMaxWetBulbC, 1)}</span>
+													°C{#if mine.dailyRelativeHumidityPct}
+														· RH <span class="font-numeric"
+															>{formatNumber(mine.dailyRelativeHumidityPct, 0)}</span
+														>%{/if}
 												</div>
 												{#if mine.hottestMonth}
 													<div class="text-muted-foreground whitespace-normal">
-														Hottest {optionLabel(mine.hottestMonth, MONTH_OPTIONS)}: DB <span class="font-numeric">{formatNumber(mine.hottestMonthMinDryBulbC, 1)}</span> / <span class="font-numeric">{formatNumber(mine.hottestMonthMaxDryBulbC, 1)}</span> °C · WB <span class="font-numeric">{formatNumber(mine.hottestMonthMinWetBulbC, 1)}</span> / <span class="font-numeric">{formatNumber(mine.hottestMonthMaxWetBulbC, 1)}</span> °C{#if mine.hottestMonthRelativeHumidityPct} · RH <span class="font-numeric">{formatNumber(mine.hottestMonthRelativeHumidityPct, 0)}</span>%{/if}
+														Hottest {optionLabel(mine.hottestMonth, MONTH_OPTIONS)}: DB
+														<span class="font-numeric"
+															>{formatNumber(mine.hottestMonthMinDryBulbC, 1)}</span
+														>
+														/
+														<span class="font-numeric"
+															>{formatNumber(mine.hottestMonthMaxDryBulbC, 1)}</span
+														>
+														°C · WB
+														<span class="font-numeric"
+															>{formatNumber(mine.hottestMonthMinWetBulbC, 1)}</span
+														>
+														/
+														<span class="font-numeric"
+															>{formatNumber(mine.hottestMonthMaxWetBulbC, 1)}</span
+														>
+														°C{#if mine.hottestMonthRelativeHumidityPct}
+															· RH <span class="font-numeric"
+																>{formatNumber(mine.hottestMonthRelativeHumidityPct, 0)}</span
+															>%{/if}
 													</div>
 												{/if}
 											</div>
@@ -460,7 +518,12 @@
 											<AlertDialog.Root>
 												<AlertDialog.Trigger>
 													{#snippet child({ props })}
-														<Button size="icon" variant="outline" aria-label="Delete mine" {...props}>
+														<Button
+															size="icon"
+															variant="outline"
+															aria-label="Delete mine"
+															{...props}
+														>
 															<TrashIcon class="h-4 w-4" />
 														</Button>
 													{/snippet}
@@ -482,7 +545,9 @@
 															</AlertDialog.Cancel>
 															<AlertDialog.Action>
 																{#snippet child({ props })}
-																	<Button type="submit" variant="destructive" {...props}>Delete</Button>
+																	<Button type="submit" variant="destructive" {...props}
+																		>Delete</Button
+																	>
 																{/snippet}
 															</AlertDialog.Action>
 														</AlertDialog.Footer>

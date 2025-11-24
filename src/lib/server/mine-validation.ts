@@ -1,4 +1,4 @@
-import { HOST_ROCK_OPTIONS, MINE_TYPE_OPTIONS, MONTH_OPTIONS } from "$lib/config/mine-fields";
+import { HOST_ROCK_OPTIONS, MINE_TYPE_OPTIONS, MONTH_OPTIONS } from '$lib/config/mine-fields';
 
 const hostRockValues = new Set(HOST_ROCK_OPTIONS.map((option) => option.value));
 const mineTypeValues = new Set(MINE_TYPE_OPTIONS.map((option) => option.value));
@@ -49,13 +49,13 @@ const parseNumber = (
 	errors: Record<string, string>
 ) => {
 	const raw = formData.get(name);
-	if (raw === null || raw === "") {
+	if (raw === null || raw === '') {
 		return null;
 	}
 
 	const value = Number(raw);
 	if (Number.isNaN(value)) {
-		errors[name] = "Enter a valid number";
+		errors[name] = 'Enter a valid number';
 		return null;
 	}
 	if (min !== undefined && value < min) {
@@ -83,16 +83,16 @@ export const parseString = (
 ) => {
 	const raw = formData.get(name);
 	if (raw === null) {
-		if (required) errors[name] = "Required";
+		if (required) errors[name] = 'Required';
 		return null;
 	}
 	const value = String(raw).trim();
 	if (!value) {
-		if (required) errors[name] = "Required";
+		if (required) errors[name] = 'Required';
 		return null;
 	}
 	if (allowed && !allowed.has(value)) {
-		errors[name] = "Select a valid option";
+		errors[name] = 'Select a valid option';
 		return null;
 	}
 	return value;
@@ -102,52 +102,52 @@ export const parseMineForm = async (request: Request): Promise<MineValidationRes
 	const formData = await request.formData();
 	const errors: Record<string, string> = {};
 
-	const name = parseString(formData, "name", { required: true }, errors);
-	const location = parseString(formData, "location", {}, errors);
-	const hostRock = parseString(formData, "hostRock", { allowed: hostRockValues }, errors);
-	const mineType = parseString(formData, "mineType", { allowed: mineTypeValues }, errors);
-	const altitudeM = parseNumber(formData, "altitudeM", { min: -500, max: 6500 }, errors);
-	const maxDepthM = parseNumber(formData, "maxDepthM", { min: 0 }, errors);
+	const name = parseString(formData, 'name', { required: true }, errors);
+	const location = parseString(formData, 'location', {}, errors);
+	const hostRock = parseString(formData, 'hostRock', { allowed: hostRockValues }, errors);
+	const mineType = parseString(formData, 'mineType', { allowed: mineTypeValues }, errors);
+	const altitudeM = parseNumber(formData, 'altitudeM', { min: -500, max: 6500 }, errors);
+	const maxDepthM = parseNumber(formData, 'maxDepthM', { min: 0 }, errors);
 
-	const dailyMaxDryBulbC = parseNumber(formData, "dailyMaxDryBulbC", { min: -60, max: 80 }, errors);
-	const dailyMinDryBulbC = parseNumber(formData, "dailyMinDryBulbC", { min: -80, max: 60 }, errors);
-	const dailyMaxWetBulbC = parseNumber(formData, "dailyMaxWetBulbC", { min: -60, max: 60 }, errors);
-	const dailyMinWetBulbC = parseNumber(formData, "dailyMinWetBulbC", { min: -80, max: 40 }, errors);
+	const dailyMaxDryBulbC = parseNumber(formData, 'dailyMaxDryBulbC', { min: -60, max: 80 }, errors);
+	const dailyMinDryBulbC = parseNumber(formData, 'dailyMinDryBulbC', { min: -80, max: 60 }, errors);
+	const dailyMaxWetBulbC = parseNumber(formData, 'dailyMaxWetBulbC', { min: -60, max: 60 }, errors);
+	const dailyMinWetBulbC = parseNumber(formData, 'dailyMinWetBulbC', { min: -80, max: 40 }, errors);
 	const dailyRelativeHumidityPct = parseNumber(
 		formData,
-		"dailyRelativeHumidityPct",
+		'dailyRelativeHumidityPct',
 		{ min: 0, max: 100 },
 		errors
 	);
 
-	const hottestMonth = parseString(formData, "hottestMonth", { allowed: monthValues }, errors);
+	const hottestMonth = parseString(formData, 'hottestMonth', { allowed: monthValues }, errors);
 	const hottestMonthMaxDryBulbC = parseNumber(
 		formData,
-		"hottestMonthMaxDryBulbC",
+		'hottestMonthMaxDryBulbC',
 		{ min: -60, max: 80 },
 		errors
 	);
 	const hottestMonthMinDryBulbC = parseNumber(
 		formData,
-		"hottestMonthMinDryBulbC",
+		'hottestMonthMinDryBulbC',
 		{ min: -80, max: 60 },
 		errors
 	);
 	const hottestMonthMaxWetBulbC = parseNumber(
 		formData,
-		"hottestMonthMaxWetBulbC",
+		'hottestMonthMaxWetBulbC',
 		{ min: -60, max: 60 },
 		errors
 	);
 	const hottestMonthMinWetBulbC = parseNumber(
 		formData,
-		"hottestMonthMinWetBulbC",
+		'hottestMonthMinWetBulbC',
 		{ min: -80, max: 40 },
 		errors
 	);
 	const hottestMonthRelativeHumidityPct = parseNumber(
 		formData,
-		"hottestMonthRelativeHumidityPct",
+		'hottestMonthRelativeHumidityPct',
 		{ min: 0, max: 100 },
 		errors
 	);

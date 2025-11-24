@@ -1,8 +1,13 @@
 import { prisma } from '$lib/db/prisma';
-import { error, fail } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
-const parseString = (formData: FormData, key: string, required = false, errors?: Record<string, string>) => {
+const parseString = (
+	formData: FormData,
+	key: string,
+	required = false,
+	errors?: Record<string, string>
+) => {
 	const value = formData.get(key);
 	const str = typeof value === 'string' ? value.trim() : '';
 	if (required && !str) {
@@ -56,6 +61,19 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 };
 
 export const actions: Actions = {
+	deleteSurvey: async ({ params }) => {
+		try {
+			await prisma.$transaction([
+				prisma.surveyReading.deleteMany({ where: { surveyId: params.surveyId } }),
+				prisma.survey.delete({ where: { id: params.surveyId } })
+			]);
+		} catch (err) {
+			console.error('Failed to delete survey', err);
+			return fail(400, { message: 'Could not delete survey. Remove readings and try again.' });
+		}
+
+		return redirect(303, '/app/surveys');
+	},
 	updateSurvey: async ({ request, params }) => {
 		const formData = await request.formData();
 		const errors: Record<string, string> = {};
@@ -201,6 +219,25 @@ export const actions: Actions = {
 		} catch (err) {
 			console.error('Failed to delete reading', err);
 			return fail(400, { message: 'Could not delete reading. Please try again.' });
+		}
+
+		return { success: true };
+	},
+	deleteReadings: async ({ request, params }) => {
+		const formData = await request.formData();
+		const ids = formData.getAll('readingIds').filter((v): v is string => typeof v === 'string');
+
+		if (ids.length === 0) {
+			return fail(400, { message: 'Select at least one reading to delete.' });
+		}
+
+		try {
+			await prisma.surveyReading.deleteMany({
+				where: { id: { in: ids }, surveyId: params.surveyId }
+			});
+		} catch (err) {
+			console.error('Failed to delete readings', err);
+			return fail(400, { message: 'Could not delete readings. Please try again.' });
 		}
 
 		return { success: true };

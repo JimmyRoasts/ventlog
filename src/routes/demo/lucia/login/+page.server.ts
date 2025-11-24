@@ -15,31 +15,31 @@ export const load: PageServerLoad = async (event) => {
 export const actions: Actions = {
 	login: async (event) => {
 		const formData = await event.request.formData();
-		const username = formData.get('username');
+		const email = formData.get('email');
 		const password = formData.get('password');
 
-		if (!validateUsername(username)) {
-			return fail(400, { message: 'Invalid username (min 3, max 31 characters, alphanumeric only)' });
+		if (!validateEmail(email)) {
+			return fail(400, { message: 'Invalid email address' });
 		}
 		if (!validatePassword(password)) {
 			return fail(400, { message: 'Invalid password (min 6, max 255 characters)' });
 		}
 
-		const existingUser = await prisma.authUser.findUnique({
-			where: { username }
+		const existingUser = await prisma.user.findUnique({
+			where: { email }
 		});
 		if (!existingUser) {
-			return fail(400, { message: 'Incorrect username or password' });
+			return fail(400, { message: 'Incorrect email or password' });
 		}
 
 		const validPassword = await verify(existingUser.passwordHash, password, {
 			memoryCost: 19456,
 			timeCost: 2,
 			outputLen: 32,
-			parallelism: 1,
+			parallelism: 1
 		});
 		if (!validPassword) {
-			return fail(400, { message: 'Incorrect username or password' });
+			return fail(400, { message: 'Incorrect email or password' });
 		}
 
 		const sessionToken = auth.generateSessionToken();
@@ -50,11 +50,15 @@ export const actions: Actions = {
 	},
 	register: async (event) => {
 		const formData = await event.request.formData();
-		const username = formData.get('username');
+		const email = formData.get('email');
+		const fullName = formData.get('fullName');
 		const password = formData.get('password');
 
-		if (!validateUsername(username)) {
-			return fail(400, { message: 'Invalid username' });
+		if (!validateEmail(email)) {
+			return fail(400, { message: 'Invalid email' });
+		}
+		if (!validateFullName(fullName)) {
+			return fail(400, { message: 'Invalid name' });
 		}
 		if (!validatePassword(password)) {
 			return fail(400, { message: 'Invalid password' });
@@ -66,12 +70,19 @@ export const actions: Actions = {
 			memoryCost: 19456,
 			timeCost: 2,
 			outputLen: 32,
-			parallelism: 1,
+			parallelism: 1
 		});
 
 		try {
-			await prisma.authUser.create({
-				data: { id: userId, username, passwordHash }
+			const companyId = await coerceCompanyId();
+			await prisma.user.create({
+				data: {
+					id: userId,
+					email,
+					fullName,
+					passwordHash,
+					companyId
+				}
 			});
 
 			const sessionToken = auth.generateSessionToken();
@@ -81,7 +92,7 @@ export const actions: Actions = {
 			return fail(500, { message: 'An error has occurred' });
 		}
 		return redirect(302, '/demo/lucia');
-	},
+	}
 };
 
 function generateUserId() {
@@ -91,19 +102,28 @@ function generateUserId() {
 	return id;
 }
 
-function validateUsername(username: unknown): username is string {
-	return (
-		typeof username === 'string' &&
-		username.length >= 3 &&
-		username.length <= 31 &&
-		/^[a-z0-9_-]+$/.test(username)
-	);
+function validateEmail(email: unknown): email is string {
+	return typeof email === 'string' && email.length > 3 && email.includes('@');
+}
+
+function validateFullName(name: unknown): name is string {
+	return typeof name === 'string' && name.trim().length > 1;
 }
 
 function validatePassword(password: unknown): password is string {
-	return (
-		typeof password === 'string' &&
-		password.length >= 6 &&
-		password.length <= 255
-	);
+	return typeof password === 'string' && password.length >= 6 && password.length <= 255;
+}
+
+async function coerceCompanyId() {
+	const existing = await prisma.company.findFirst({ select: { id: true } });
+	if (existing?.id) return existing.id;
+
+	const created = await prisma.company.create({
+		data: {
+			name: 'Default Company',
+			primaryDomain: 'ventlog.local'
+		},
+		select: { id: true }
+	});
+	return created.id;
 }

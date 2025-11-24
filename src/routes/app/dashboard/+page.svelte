@@ -9,8 +9,8 @@
 	</CardHeader>
 	<CardContent class="space-y-3">
 		<p class="text-muted-foreground">
-			This will surface recent surveys, key mines, and quick links so the team can jump straight into
-			current ventilation work.
+			This will surface recent surveys, key mines, and quick links so the team can jump straight
+			into current ventilation work.
 		</p>
 		<div class="flex flex-wrap gap-3">
 			<Button href="/app/surveys" variant="default">View surveys</Button>

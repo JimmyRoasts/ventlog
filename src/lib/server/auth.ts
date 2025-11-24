@@ -1,7 +1,7 @@
 import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeBase64url, encodeHexLowerCase } from '@oslojs/encoding';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { AuthSession, AuthUser } from '@prisma/client';
+import type { Session, User } from '@prisma/client';
 import { prisma } from '$lib/db/prisma';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
@@ -18,7 +18,7 @@ export async function createSession(token: string, userId: string) {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const expiresAt = new Date(Date.now() + DAY_IN_MS * 30);
 
-	const session = await prisma.authSession.create({
+	const session = await prisma.session.create({
 		data: {
 			id: sessionId,
 			userId,
@@ -32,7 +32,7 @@ export async function createSession(token: string, userId: string) {
 export async function validateSessionToken(token: string) {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 
-	const session = await prisma.authSession.findUnique({
+	const session = await prisma.session.findUnique({
 		where: { id: sessionId },
 		include: { user: true }
 	});
@@ -40,18 +40,22 @@ export async function validateSessionToken(token: string) {
 	if (!session) {
 		return { session: null, user: null };
 	}
-	const safeUser: SessionUser = { id: session.user.id, username: session.user.username };
+	const safeUser: SessionUser = {
+		id: session.user.id,
+		email: session.user.email,
+		fullName: session.user.fullName
+	};
 
 	const sessionExpired = Date.now() >= session.expiresAt.getTime();
 	if (sessionExpired) {
-		await prisma.authSession.delete({ where: { id: session.id } });
+		await prisma.session.delete({ where: { id: session.id } });
 		return { session: null, user: null };
 	}
 
 	const renewSession = Date.now() >= session.expiresAt.getTime() - DAY_IN_MS * 15;
 	if (renewSession) {
 		const refreshedExpiresAt = new Date(Date.now() + DAY_IN_MS * 30);
-		const refreshed = await prisma.authSession.update({
+		const refreshed = await prisma.session.update({
 			where: { id: session.id },
 			data: { expiresAt: refreshedExpiresAt },
 			include: { user: true }
@@ -59,19 +63,23 @@ export async function validateSessionToken(token: string) {
 
 		return {
 			session: refreshed,
-			user: { id: refreshed.user.id, username: refreshed.user.username }
+			user: {
+				id: refreshed.user.id,
+				email: refreshed.user.email,
+				fullName: refreshed.user.fullName
+			}
 		};
 	}
 
 	return { session, user: safeUser };
 }
 
-type SessionUser = Pick<AuthUser, 'id' | 'username'>;
-type SessionResult = { session: AuthSession | null; user: SessionUser | null };
+type SessionUser = Pick<User, 'id' | 'email' | 'fullName'>;
+type SessionResult = { session: Session | null; user: SessionUser | null };
 export type SessionValidationResult = SessionResult;
 
 export async function invalidateSession(sessionId: string) {
-	await prisma.authSession.delete({ where: { id: sessionId } });
+	await prisma.session.delete({ where: { id: sessionId } });
 }
 
 export function setSessionTokenCookie(event: RequestEvent, token: string, expiresAt: Date) {

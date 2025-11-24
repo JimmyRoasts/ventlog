@@ -1,7 +1,7 @@
 {
-  "compilerOptions": {
-    "checkJs": false,
-    "types": ["svelte"]
-  },
-  "include": ["src"]
+	"compilerOptions": {
+		"checkJs": false,
+		"types": ["svelte"]
+	},
+	"include": ["src"]
 }

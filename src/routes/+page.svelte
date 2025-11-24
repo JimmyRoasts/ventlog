@@ -1,8 +1,10 @@
-<section class="space-y-6 rounded-lg border border-border bg-card p-8 shadow-sm text-card-foreground">
+<section
+	class="space-y-6 rounded-lg border border-border bg-card p-8 shadow-sm text-card-foreground"
+>
 	<h1 class="text-3xl font-semibold tracking-tight text-foreground">Ventlog</h1>
 	<p class="text-lg text-muted-foreground">
-		A self-hosted toolkit for underground ventilation surveys, with simple, standardised data capture and clear
-		guidance.
+		A self-hosted toolkit for underground ventilation surveys, with simple, standardised data
+		capture and clear guidance.
 	</p>
 	<div class="flex flex-wrap gap-3">
 		<a
@@ -19,7 +21,8 @@
 		</a>
 	</div>
 	<p class="text-sm text-muted-foreground">
-		You can come back here to jump into the app or the guidance any time. The main workspace lives under
+		You can come back here to jump into the app or the guidance any time. The main workspace lives
+		under
 		<code class="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">/app</code>.
 	</p>
 </section>

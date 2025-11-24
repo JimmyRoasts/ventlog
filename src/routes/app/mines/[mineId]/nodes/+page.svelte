@@ -20,14 +20,15 @@
 	const formatNumber = (value: number | null | undefined, digits = 1) =>
 		value == null ? '—' : Number(value).toLocaleString('en-US', { maximumFractionDigits: digits });
 
-	const formEnhance = (onSuccess: () => void): SubmitFunction =>
+	const formEnhance =
+		(onSuccess: () => void): SubmitFunction =>
 		() =>
-			async ({ result, update }) => {
-				await update();
-				if (result.type === 'success') {
-					onSuccess();
-				}
-			};
+		async ({ result, update }) => {
+			await update();
+			if (result.type === 'success') {
+				onSuccess();
+			}
+		};
 </script>
 
 <section class="space-y-6">
@@ -65,15 +66,11 @@
 						>
 							<div class="grid gap-4 sm:grid-cols-2">
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-foreground" for="node-name">
-										Name
-									</label>
+									<label class="text-sm font-medium text-foreground" for="node-name"> Name </label>
 									<Input id="node-name" name="name" placeholder="Return airway 22" required />
 								</div>
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-foreground" for="node-code">
-										Code
-									</label>
+									<label class="text-sm font-medium text-foreground" for="node-code"> Code </label>
 									<Input id="node-code" name="code" placeholder="RA-22" />
 								</div>
 								<div class="space-y-2">
@@ -145,10 +142,7 @@
 				<tbody class="divide-y divide-border bg-card">
 					{#if data.mine.nodes.length === 0}
 						<tr>
-							<td
-								class="px-4 py-6 text-center text-muted-foreground"
-								colspan={7}
-							>
+							<td class="px-4 py-6 text-center text-muted-foreground" colspan={7}>
 								No survey points defined yet.
 							</td>
 						</tr>
@@ -176,12 +170,20 @@
 										<Dialog.Root
 											open={activeEditId === node.id}
 											onOpenChange={(open) =>
-												(activeEditId =
-													open ? node.id : activeEditId === node.id ? null : activeEditId)}
+												(activeEditId = open
+													? node.id
+													: activeEditId === node.id
+														? null
+														: activeEditId)}
 										>
 											<Dialog.Trigger>
 												{#snippet child({ props })}
-													<Button size="icon" variant="outline" aria-label="Edit survey point" {...props}>
+													<Button
+														size="icon"
+														variant="outline"
+														aria-label="Edit survey point"
+														{...props}
+													>
 														<EditIcon class="h-4 w-4" />
 													</Button>
 												{/snippet}
@@ -202,7 +204,10 @@
 													<input type="hidden" name="id" value={node.id} />
 													<div class="grid gap-4 sm:grid-cols-2">
 														<div class="space-y-2">
-															<label class="text-sm font-medium text-foreground" for={`name-${node.id}`}>
+															<label
+																class="text-sm font-medium text-foreground"
+																for={`name-${node.id}`}
+															>
 																Name
 															</label>
 															<Input
@@ -213,17 +218,19 @@
 															/>
 														</div>
 														<div class="space-y-2">
-															<label class="text-sm font-medium text-foreground" for={`code-${node.id}`}>
+															<label
+																class="text-sm font-medium text-foreground"
+																for={`code-${node.id}`}
+															>
 																Code
 															</label>
-															<Input
-																id={`code-${node.id}`}
-																name="code"
-																value={node.code ?? ''}
-															/>
+															<Input id={`code-${node.id}`} name="code" value={node.code ?? ''} />
 														</div>
 														<div class="space-y-2">
-															<label class="text-sm font-medium text-foreground" for={`level-${node.id}`}>
+															<label
+																class="text-sm font-medium text-foreground"
+																for={`level-${node.id}`}
+															>
 																Level name
 															</label>
 															<Input
@@ -249,7 +256,10 @@
 														</div>
 													</div>
 													<div class="space-y-2">
-														<label class="text-sm font-medium text-foreground" for={`desc-${node.id}`}>
+														<label
+															class="text-sm font-medium text-foreground"
+															for={`desc-${node.id}`}
+														>
 															Description
 														</label>
 														<Textarea
@@ -259,7 +269,9 @@
 															value={node.description ?? ''}
 														/>
 													</div>
-													<label class="flex items-center gap-2 text-sm font-medium text-foreground">
+													<label
+														class="flex items-center gap-2 text-sm font-medium text-foreground"
+													>
 														<Checkbox name="isActive" checked={node.isActive} />
 														<span>Active</span>
 													</label>
@@ -278,12 +290,20 @@
 										<Dialog.Root
 											open={activeDeleteId === node.id}
 											onOpenChange={(open) =>
-												(activeDeleteId =
-													open ? node.id : activeDeleteId === node.id ? null : activeDeleteId)}
+												(activeDeleteId = open
+													? node.id
+													: activeDeleteId === node.id
+														? null
+														: activeDeleteId)}
 										>
 											<Dialog.Trigger>
 												{#snippet child({ props })}
-													<Button size="icon" variant="outline" aria-label="Delete survey point" {...props}>
+													<Button
+														size="icon"
+														variant="outline"
+														aria-label="Delete survey point"
+														{...props}
+													>
 														<TrashIcon class="h-4 w-4" />
 													</Button>
 												{/snippet}

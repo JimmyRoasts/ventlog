@@ -29,6 +29,7 @@ model User {
   company        Company  @relation(fields: [companyId], references: [id])
   companyId      String
   surveysCreated Survey[] @relation("SurveyCreatedBy")
+  sessions       Session[]
 
   createdAt DateTime @default(now())
 }
@@ -126,23 +127,13 @@ model SurveyReading {
   @@unique([surveyId, nodeId, readingIndex])
 }
 
-model AuthUser {
-  id           String       @id @default(cuid())
-  username     String       @unique
-  passwordHash String
-  createdAt    DateTime     @default(now())
-  sessions     AuthSession[]
-
-  @@map("auth_user")
-}
-
-model AuthSession {
+model Session {
   id        String   @id
-  user      AuthUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   expiresAt DateTime
   createdAt DateTime @default(now())
 
-  @@map("auth_session")
+  @@map("session")
   @@index([userId])
 }
