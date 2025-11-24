@@ -10,6 +10,8 @@ cd "$(dirname "$0")"
 
 ENV_FILE=".env"
 DEFAULT_DB_URL="${DATABASE_URL:-file:local.db}"
+# Hide Prisma's major-version upgrade prompt to keep setup output clean
+export PRISMA_HIDE_UPDATE_MESSAGE=true
 
 ensure_env() {
 	if [[ -f "$ENV_FILE" ]]; then
@@ -34,7 +36,7 @@ main() {
 	npm install
 
 	echo "Applying Prisma migrations (creates local SQLite DB if missing)..."
-	npx prisma migrate dev --name init --skip-seed
+	npx prisma migrate dev --skip-seed
 
 	echo "All set. Start the dev server with: npm run dev"
 }
