@@ -8,7 +8,13 @@
 		error,
 		class: className,
 		children
-	}: { label: string; forId: string; error?: string; class?: string; children?: Snippet } = $props();
+	}: {
+		label: string;
+		forId: string;
+		error?: string;
+		class?: string;
+		children?: Snippet;
+	} = $props();
 </script>
 
 <div class={cn('space-y-2', className)}>

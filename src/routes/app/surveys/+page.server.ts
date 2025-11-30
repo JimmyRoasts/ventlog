@@ -55,7 +55,9 @@ export const actions: Actions = {
 	},
 	deleteSelected: async ({ request }) => {
 		const formData = await request.formData();
-		const surveyIds = formData.getAll('surveyIds').filter((v): v is string => typeof v === 'string');
+		const surveyIds = formData
+			.getAll('surveyIds')
+			.filter((v): v is string => typeof v === 'string');
 
 		if (surveyIds.length === 0) {
 			return fail(400, { message: 'Select at least one survey to delete.' });

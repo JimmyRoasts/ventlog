@@ -8,11 +8,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import * as Table from '$lib/components/ui/table';
-	import {
-		FlexRender,
-		createSvelteTable,
-		renderSnippet
-	} from '$lib/components/ui/data-table';
+	import { FlexRender, createSvelteTable, renderSnippet } from '$lib/components/ui/data-table';
 	import { getContext } from 'svelte';
 	import {
 		type ColumnDef,
@@ -152,14 +148,16 @@
 		},
 		onColumnVisibilityChange: (updater) => {
 			columnVisibility =
-				typeof updater === 'function' ? updater(columnVisibility) : updater ?? columnVisibility;
+				typeof updater === 'function' ? updater(columnVisibility) : (updater ?? columnVisibility);
 		},
 		onGlobalFilterChange: (updater) => {
 			globalFilter = typeof updater === 'function' ? updater(globalFilter) : String(updater ?? '');
 		}
 	});
 
-	const selectedSurveyIds = $derived(table.getSelectedRowModel().rows.map((row) => row.original.id));
+	const selectedSurveyIds = $derived(
+		table.getSelectedRowModel().rows.map((row) => row.original.id)
+	);
 
 	const formEnhance =
 		(onSuccess: () => void): SubmitFunction =>
@@ -224,7 +222,8 @@
 								<Dialog.Header>
 									<Dialog.Title>Delete selected surveys?</Dialog.Title>
 									<Dialog.Description>
-										This removes the chosen surveys and all of their readings. This cannot be undone.
+										This removes the chosen surveys and all of their readings. This cannot be
+										undone.
 									</Dialog.Description>
 								</Dialog.Header>
 								<form
@@ -303,12 +302,15 @@
 										{/if}
 									</div>
 									<div class="space-y-2">
-										<label class="text-sm font-medium text-foreground" for="survey-title">Title</label>
+										<label class="text-sm font-medium text-foreground" for="survey-title"
+											>Title</label
+										>
 										<Input id="survey-title" name="title" placeholder="Primary fans check" />
 									</div>
 								</div>
 								<div class="space-y-2">
-									<label class="text-sm font-medium text-foreground" for="survey-notes">Notes</label>
+									<label class="text-sm font-medium text-foreground" for="survey-notes">Notes</label
+									>
 									<Textarea
 										id="survey-notes"
 										name="notes"
@@ -378,7 +380,10 @@
 					<Table.Body class="divide-y divide-border bg-card text-sm text-foreground">
 						{#if table.getRowModel().rows.length === 0}
 							<Table.Row>
-								<Table.Cell colspan={table.getAllLeafColumns().length} class="px-4 py-6 text-center">
+								<Table.Cell
+									colspan={table.getAllLeafColumns().length}
+									class="px-4 py-6 text-center"
+								>
 									<p class="text-sm text-muted-foreground">
 										No surveys yet. Create one to start logging readings.
 									</p>
@@ -432,8 +437,6 @@
 
 {#snippet actionCell({ id }: { id: string })}
 	<div class="flex justify-end">
-		<Button href={`/app/surveys/${id}`} variant="outline" size="sm">
-			Open
-		</Button>
+		<Button href={`/app/surveys/${id}`} variant="outline" size="sm">Open</Button>
 	</div>
 {/snippet}

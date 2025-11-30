@@ -82,12 +82,10 @@
 		const valid = new Set(data.survey.readings.map((r) => r.id));
 		selectedReadingIds = selectedReadingIds.filter((id) => valid.has(id));
 		selectAllReadingsChecked =
-			data.survey.readings.length > 0 &&
-			selectedReadingIds.length === data.survey.readings.length;
+			data.survey.readings.length > 0 && selectedReadingIds.length === data.survey.readings.length;
 
 		indeterminateState =
-			selectedReadingIds.length > 0 &&
-			selectedReadingIds.length < data.survey.readings.length;
+			selectedReadingIds.length > 0 && selectedReadingIds.length < data.survey.readings.length;
 	});
 </script>
 
@@ -236,16 +234,16 @@
 								This will remove the selected readings from this survey. This cannot be undone.
 							</Dialog.Description>
 						</Dialog.Header>
-					<form
-						method="POST"
-						action="?/deleteReadings"
-						class="mt-4 flex justify-end gap-2"
-						use:enhance={formEnhance(() => {
-							selectedReadingIds = [];
-							selectAllReadingsChecked = false;
-							bulkDeleteReadingsOpen = false;
-						})}
-					>
+						<form
+							method="POST"
+							action="?/deleteReadings"
+							class="mt-4 flex justify-end gap-2"
+							use:enhance={formEnhance(() => {
+								selectedReadingIds = [];
+								selectAllReadingsChecked = false;
+								bulkDeleteReadingsOpen = false;
+							})}
+						>
 							{#each selectedReadingIds as id}
 								<input type="hidden" name="readingIds" value={id} />
 							{/each}
