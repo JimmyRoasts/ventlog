@@ -9,6 +9,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import * as Table from '$lib/components/ui/table';
+	import SortableHeader from '$lib/components/SortableHeader.svelte';
 	import EditIcon from '@lucide/svelte/icons/pencil';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import PlusIcon from '@lucide/svelte/icons/plus';
@@ -17,6 +18,8 @@
 	import type { Readable, Writable } from 'svelte/store';
 	import { formatNumber } from '$lib/utils/format';
 	import type { PageData } from './$types';
+	import { createNodeCollection } from '$lib/stores/NodeCollection';
+	import type { Node } from '$lib/types/Node';
 
 	type MineContext = {
 		mines: { id: string; name: string }[];
@@ -33,6 +36,10 @@
 	let createOpen = $state(false);
 	let activeEditId = $state<string | null>(null);
 	let activeDeleteId = $state<string | null>(null);
+
+	const nodeCollection = createNodeCollection(data.mine?.nodes ?? []);
+	const sortedNodes = nodeCollection;
+	const sortState = nodeCollection.sortState;
 
 	$effect(() => {
 		if (contextSelectedMineId && selectedMineId !== $contextSelectedMineId) {
@@ -191,29 +198,60 @@
 			</div>
 			<div class="overflow-auto">
 				<Table.Root class="min-w-full text-sm">
-					<Table.Header class="bg-muted/60 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+					<Table.Header
+						class="bg-muted/60 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+					>
 						<Table.Row>
-							<Table.Head class="px-4 py-2">Name</Table.Head>
-							<Table.Head class="px-4 py-2">Code</Table.Head>
-							<Table.Head class="px-4 py-2">Level</Table.Head>
-							<Table.Head class="px-4 py-2 text-right">Elevation (mRL)</Table.Head>
+							<Table.Head class="px-4 py-2">
+								<SortableHeader
+									label="Name"
+									sortKey="name"
+									{sortState}
+									onSort={(key) => nodeCollection.setSort(key as keyof Node)}
+								/>
+							</Table.Head>
+							<Table.Head class="px-4 py-2">
+								<SortableHeader
+									label="Code"
+									sortKey="code"
+									{sortState}
+									onSort={(key) => nodeCollection.setSort(key as keyof Node)}
+								/>
+							</Table.Head>
+							<Table.Head class="px-4 py-2">
+								<SortableHeader
+									label="Level"
+									sortKey="levelName"
+									{sortState}
+									onSort={(key) => nodeCollection.setSort(key as keyof Node)}
+								/>
+							</Table.Head>
+							<Table.Head class="px-4 py-2 text-right">
+								<SortableHeader
+									label="Elevation (mRL)"
+									sortKey="levelElevationM"
+									{sortState}
+									onSort={(key) => nodeCollection.setSort(key as keyof Node)}
+								/>
+							</Table.Head>
 							<Table.Head class="px-4 py-2">Description</Table.Head>
 							<Table.Head class="px-4 py-2 text-center">Active</Table.Head>
 							<Table.Head class="px-4 py-2 text-right">Actions</Table.Head>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body class="divide-y divide-border bg-card">
-						{#if data.mine.nodes.length === 0}
+						{#if $sortedNodes.length === 0}
 							<Table.Row>
 								<Table.Cell class="px-4 py-6 text-center text-muted-foreground" colspan={7}>
 									No survey points defined yet.
 								</Table.Cell>
 							</Table.Row>
 						{:else}
-							{#each data.mine.nodes as node}
+							{#each $sortedNodes as node}
 								<Table.Row class="align-top hover:bg-muted/50">
 									<Table.Cell class="px-4 py-3 font-medium text-foreground">{node.name}</Table.Cell>
-									<Table.Cell class="px-4 py-3 text-muted-foreground">{node.code ?? '—'}</Table.Cell>
+									<Table.Cell class="px-4 py-3 text-muted-foreground">{node.code ?? '—'}</Table.Cell
+									>
 									<Table.Cell class="px-4 py-3 text-muted-foreground">
 										{node.levelName ?? '—'}
 									</Table.Cell>
@@ -277,11 +315,7 @@
 																/>
 															</FormField>
 															<FormField label="Code" forId={`code-${node.id}`}>
-																<Input
-																	id={`code-${node.id}`}
-																	name="code"
-																	value={node.code ?? ''}
-																/>
+																<Input id={`code-${node.id}`} name="code" value={node.code ?? ''} />
 															</FormField>
 															<FormField label="Level name" forId={`level-${node.id}`}>
 																<Input

@@ -6,14 +6,28 @@
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { Input } from '$lib/components/ui/input';
 	import FormField from '$lib/components/FormField.svelte';
+	import SortableHeader from '$lib/components/SortableHeader.svelte';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import PencilIcon from '@lucide/svelte/icons/pencil';
 	import TrashIcon from '@lucide/svelte/icons/trash';
 	import { formatNumber, optionLabel } from '$lib/utils/format';
 	import type { ActionData, PageData } from './$types';
+	import { createMineCollection } from '$lib/stores/MineCollection';
+	import type { Mine } from '$lib/types/Mine';
 
 	let { data, form }: { data: PageData; form: ActionData | null } = $props();
-	type MineRow = PageData['mines'][number];
+
+	// Initialize the custom store
+	const mineCollection = createMineCollection(data.mines);
+
+	// Auto-subscribe to the sorted mines
+	const sortedMines = mineCollection;
+	const sortState = mineCollection.sortState;
+
+	// Function to handle sorting clicks
+	function handleSort(key: keyof Mine) {
+		mineCollection.setSort(key); // The store now handles toggling direction
+	}
 
 	const SELECT_CLASS =
 		'border-input bg-background selection:bg-primary selection:text-primary-foreground ring-offset-background placeholder:text-muted-foreground shadow-xs flex h-9 w-full min-w-0 rounded-md border px-3 py-1 text-base outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm';
@@ -38,7 +52,7 @@
 </script>
 
 {#snippet mineForm({
-	mine = null as MineRow | null,
+	mine = null as Mine | null, // Changed from MineRow to Mine
 	action = '?/create',
 	submitLabel = 'Save mine'
 })}
@@ -379,7 +393,7 @@
 	</Card>
 
 	<Card>
-		{#if data.mines.length === 0}
+		{#if $sortedMines.length === 0}
 			<CardContent class="border border-dashed border-border bg-card text-sm text-muted-foreground">
 				No mines yet. Create one to start tagging nodes and surveys.
 			</CardContent>
@@ -391,21 +405,60 @@
 							class="bg-muted/70 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground"
 						>
 							<tr>
-								<th class="px-4 py-3 text-center">Name</th>
-								<th class="px-4 py-3 text-center">Location</th>
-								<th class="px-4 py-3 text-center">Host rock</th>
-								<th class="px-4 py-3 text-center">Mine type</th>
+								<th class="px-4 py-3 text-center">
+									<SortableHeader
+										label="Name"
+										sortKey="name"
+										{sortState}
+										onSort={(key) => handleSort(key as keyof Mine)}
+									/>
+								</th>
+
+								<th class="px-4 py-3 text-center">
+									<SortableHeader
+										label="Location"
+										sortKey="location"
+										{sortState}
+										onSort={(key) => handleSort(key as keyof Mine)}
+									/>
+								</th>
+
+								<th class="px-4 py-3 text-center">
+									<SortableHeader
+										label="Host rock"
+										sortKey="hostRock"
+										{sortState}
+										onSort={(key) => handleSort(key as keyof Mine)}
+									/>
+								</th>
+
+								<th class="px-4 py-3 text-center">
+									<SortableHeader
+										label="Mine type"
+										sortKey="mineType"
+										{sortState}
+										onSort={(key) => handleSort(key as keyof Mine)}
+									/>
+								</th>
+
 								<th class="px-4 py-3 text-center">Max depth (m)</th>
+
 								<th class="px-4 py-3 text-center">Altitude (m)</th>
+
 								<th class="px-4 py-3 text-center">Site pressure (kPa)</th>
+
 								<th class="px-4 py-3 text-center">Weather</th>
+
 								<th class="px-4 py-3 text-center">Actions</th>
+
 								<th class="px-4 py-3 text-center">Survey points</th>
+
 								<th class="px-4 py-3 text-center">Surveys</th>
 							</tr>
 						</thead>
+
 						<tbody class="divide-y divide-border bg-card text-sm text-foreground">
-							{#each data.mines as mine}
+							{#each $sortedMines as mine}
 								<tr class="hover:bg-muted/70 align-top">
 									<td class="px-4 py-3 font-medium text-foreground text-left">
 										<div class="flex items-center gap-2">
